@@ -7,7 +7,6 @@ wykres charakterystyki pompy z możliwością przedstawienia mnożników x2 i x3
 
 ## Struktura projektu
 
-codex/create-pdf-generation-in-cloudflare-worker-lcs7pi
 - `src/worker.js` – moduł Workera wskazany w `wrangler.jsonc`.
 - `src/lib/pdf-lib.esm.min.js` – zvendoryzowana biblioteka [`pdf-lib`](https://pdf-lib.js.org/) wykorzystywana do pracy na plikach PDF (dzięki temu wdrożenie w środowisku Cloudflare nie wymaga instalacji zależności w trakcie buildu).
 - `wrangler.jsonc` – konfiguracja Wranglera z nazwą projektu oraz datą kompatybilności.
@@ -27,6 +26,15 @@ codex/create-pdf-generation-in-cloudflare-worker-lcs7pi
    ```bash
    npx wrangler deploy
    ```
+
+## Moduł testowy `/test`
+
+Worker udostępnia moduł testowy pod adresem `/test`, który działa bez dodatkowej konfiguracji
+po wdrożeniu. Strona zawiera formularz z przykładowym ładunkiem JSON, przyciski do przywrócenia
+danych demonstracyjnych oraz osadzony podgląd wygenerowanego PDF. Po wysłaniu formularza
+wykonywane jest zapytanie `POST` do Workera, a wygenerowany dokument pojawia się w przeglądarce.
+
+Adres produkcyjny z modułem testowym: `https://pdf-render.tomasz-fastyn.workers.dev/test`
 
 
 ## Format żądania

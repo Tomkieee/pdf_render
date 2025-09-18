@@ -4,6 +4,280 @@ const FALLBACK_TEMPLATE_TITLE = 'Karta pracy pompy';
 const DEFAULT_FILENAME = 'karta-pompy.pdf';
 const PHOTO_FRAME_SIZE = 160;
 const MARGIN = 40;
+const TEST_PAGE_HTML = `<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Moduł testowy generatora kart pompy</title>
+    <style>
+      :root {
+        color-scheme: only light;
+      }
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', Roboto, sans-serif;
+        background: #f5f7fb;
+        color: #151b2f;
+      }
+      header {
+        background: linear-gradient(135deg, #0c3d91, #1282c3);
+        color: #fff;
+        padding: 40px 16px 32px;
+        box-shadow: 0 2px 8px rgba(8, 35, 68, 0.25);
+      }
+      header h1 {
+        margin: 0 auto;
+        max-width: 960px;
+        font-size: 2rem;
+      }
+      header p {
+        margin: 12px auto 0;
+        max-width: 960px;
+        font-size: 1rem;
+        line-height: 1.5;
+        opacity: 0.85;
+      }
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 32px 16px 64px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+        align-items: start;
+      }
+      .panel {
+        background: #ffffff;
+        border-radius: 18px;
+        border: 1px solid rgba(12, 61, 145, 0.08);
+        box-shadow: 0 12px 30px rgba(12, 45, 120, 0.08);
+        padding: 24px;
+      }
+      h2 {
+        margin-top: 0;
+        color: #0c3d91;
+        font-size: 1.25rem;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 280px;
+        resize: vertical;
+        font-family: 'Fira Code', 'SFMono-Regular', ui-monospace, monospace;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(19, 56, 108, 0.25);
+        background: #fdfdff;
+        box-shadow: inset 0 1px 3px rgba(15, 36, 72, 0.1);
+      }
+      textarea:focus {
+        outline: none;
+        border-color: #1282c3;
+        box-shadow: 0 0 0 3px rgba(18, 130, 195, 0.25);
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 12px 22px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      button.primary {
+        background: linear-gradient(135deg, #0c3d91, #1282c3);
+        color: #fff;
+        box-shadow: 0 10px 18px rgba(18, 130, 195, 0.25);
+      }
+      button.secondary {
+        background: #e6eef7;
+        color: #0c3d91;
+        box-shadow: 0 6px 12px rgba(14, 52, 110, 0.12);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .status {
+        font-weight: 600;
+        margin: 8px 0 16px;
+        color: #374260;
+      }
+      .status.error {
+        color: #b3261e;
+      }
+      .status.success {
+        color: #1b834d;
+      }
+      iframe {
+        width: 100%;
+        min-height: 520px;
+        border-radius: 14px;
+        border: 1px solid rgba(12, 61, 145, 0.16);
+        background: #ffffff;
+        box-shadow: inset 0 2px 10px rgba(12, 45, 120, 0.12);
+      }
+      footer {
+        max-width: 960px;
+        margin: 32px auto 48px;
+        padding: 0 16px;
+        font-size: 0.85rem;
+        color: rgba(21, 27, 47, 0.6);
+      }
+      code {
+        background: rgba(12, 61, 145, 0.08);
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+      }
+      @media (max-width: 640px) {
+        header {
+          padding: 32px 16px 28px;
+        }
+        header h1 {
+          font-size: 1.6rem;
+        }
+        header p {
+          font-size: 0.95rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Moduł testowy generatora kart pracy pomp</h1>
+      <p>
+        Wypełnij przykładowe dane produktu oraz punkty pomiarowe pompy, a następnie wygeneruj PDF.
+        Formularz wyśle zapytanie <code>POST</code> do tego samego Workera i wyświetli dokument w podglądzie.
+      </p>
+    </header>
+    <main>
+      <section class="layout">
+        <article class="panel">
+          <h2>Dane wejściowe (JSON)</h2>
+          <p>
+            Zmień wartości i kliknij <strong>Generuj PDF</strong>. Pola <code>photoUrl</code> oraz <code>templateUrl</code> są opcjonalne.
+          </p>
+          <form id="pdfForm">
+            <textarea id="payload" spellcheck="false" aria-label="Dane wejściowe JSON"></textarea>
+            <div class="controls">
+              <button class="primary" type="submit">Generuj PDF</button>
+              <button class="secondary" type="button" id="resetSample">Przywróć przykład</button>
+            </div>
+          </form>
+        </article>
+        <article class="panel">
+          <h2>Podgląd PDF</h2>
+          <p id="status" class="status">Oczekiwanie na dane…</p>
+          <iframe id="viewer" title="Podgląd wygenerowanego PDF"></iframe>
+        </article>
+      </section>
+    </main>
+    <footer>
+      Przykład zakłada idealne dodawanie wydajności w trybie równoległym pomp (mnożniki x2 i x3) bez zmiany krzywej charakterystyki.
+    </footer>
+    <script>
+      const payloadField = document.getElementById('payload');
+      const statusField = document.getElementById('status');
+      const viewer = document.getElementById('viewer');
+      const resetButton = document.getElementById('resetSample');
+      const form = document.getElementById('pdfForm');
+      const samplePayload = {
+        product: {
+          name: 'Pompa Hydro-200',
+          model: 'H200',
+          description: 'Przykładowa pompa do układów hydroforowych',
+        },
+        photoUrl: 'https://placekitten.com/640/640',
+        pumpData: {
+          points: [
+            { H: 42, flowM3h: 0 },
+            { H: 40, flowM3h: 3.2 },
+            { H: 33, flowM3h: 6.5 },
+            { H: 27, flowM3h: 9.2 },
+            { H: 20, flowM3h: 12.1 },
+            { H: 11, flowM3h: 15.4 }
+          ]
+        },
+        metadata: {
+          title: 'Karta pracy pompy Hydro-200',
+          author: 'Moduł testowy',
+        }
+      };
+
+      payloadField.value = JSON.stringify(samplePayload, null, 2);
+
+      resetButton.addEventListener('click', () => {
+        payloadField.value = JSON.stringify(samplePayload, null, 2);
+        payloadField.focus();
+        statusField.textContent = 'Przywrócono przykładowe dane.';
+        statusField.className = 'status';
+        viewer.removeAttribute('src');
+      });
+
+      let lastObjectUrl;
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (lastObjectUrl) {
+          URL.revokeObjectURL(lastObjectUrl);
+          lastObjectUrl = undefined;
+        }
+        let payload;
+        try {
+          payload = JSON.parse(payloadField.value);
+        } catch (error) {
+          statusField.textContent = 'Błąd: niepoprawny JSON – ' + error.message;
+          statusField.className = 'status error';
+          viewer.removeAttribute('src');
+          return;
+        }
+
+        statusField.textContent = 'Generowanie dokumentu…';
+        statusField.className = 'status';
+        viewer.removeAttribute('src');
+
+        try {
+          const endpoint = new URL('/', window.location.href);
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            const message = await response.text();
+            statusField.textContent = 'Błąd serwera (' + response.status + '): ' + message;
+            statusField.className = 'status error';
+            return;
+          }
+
+          const blob = await response.blob();
+          lastObjectUrl = URL.createObjectURL(blob);
+          viewer.src = lastObjectUrl;
+          statusField.textContent = 'Dokument wygenerowany pomyślnie.';
+          statusField.className = 'status success';
+        } catch (error) {
+          statusField.textContent = 'Błąd połączenia: ' + error.message;
+          statusField.className = 'status error';
+        }
+      });
+    </script>
+  </body>
+</html>`;
 
 function formatNumber(value, decimals = 1) {
   if (!Number.isFinite(value)) {
@@ -549,10 +823,49 @@ async function renderPdf(payload) {
 }
 
 async function handleRequest(request) {
+  const url = new URL(request.url);
+  const normalizedPath = url.pathname.replace(/\/+$/, '') || '/';
+
+  if (request.method === 'GET' || request.method === 'HEAD') {
+    if (normalizedPath === '/test') {
+      return new Response(request.method === 'HEAD' ? null : TEST_PAGE_HTML, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=UTF-8',
+          'Cache-Control': 'no-store',
+        },
+      });
+    }
+
+    if (normalizedPath === '/') {
+      const body =
+        'Ten Worker generuje karty PDF dla pomp. Wyślij żądanie POST z danymi lub odwiedź /test, aby skorzystać z modułu podglądu.';
+      return new Response(request.method === 'HEAD' ? null : body, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/plain; charset=UTF-8',
+          'Cache-Control': 'no-store',
+        },
+      });
+    }
+
+    return new Response(request.method === 'HEAD' ? null : 'Nie znaleziono zasobu.', {
+      status: 404,
+      headers: {
+        'Content-Type': 'text/plain; charset=UTF-8',
+        'Cache-Control': 'no-store',
+      },
+    });
+  }
+
   if (request.method !== 'POST') {
-    return new Response('Użyj metody POST, aby wygenerować PDF.', {
+    return new Response('Do wygenerowania PDF użyj metody POST.', {
       status: 405,
-      headers: { Allow: 'POST' },
+      headers: {
+        Allow: 'GET, HEAD, POST',
+        'Content-Type': 'text/plain; charset=UTF-8',
+      },
+
     });
   }
 
@@ -560,7 +873,11 @@ async function handleRequest(request) {
   try {
     payload = await request.json();
   } catch (error) {
-    return new Response('Nieprawidłowe dane wejściowe (JSON).', { status: 400 });
+    return new Response('Nieprawidłowe dane wejściowe (JSON).', {
+      status: 400,
+      headers: { 'Content-Type': 'text/plain; charset=UTF-8' },
+    });
+
   }
 
   try {
@@ -573,7 +890,11 @@ async function handleRequest(request) {
       },
     });
   } catch (error) {
-    return new Response(`Błąd generowania PDF: ${error.message}`, { status: 400 });
+    return new Response(`Błąd generowania PDF: ${error.message}`, {
+      status: 400,
+      headers: { 'Content-Type': 'text/plain; charset=UTF-8' },
+    });
+
   }
 }
 
