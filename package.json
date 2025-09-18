@@ -4,6 +4,11 @@
   "description": "Cloudflare Worker do generowania kart PDF dla pomp hydraulicznych",
   "private": true,
   "scripts": {
+
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250918.0"
+=======
     "deploy": "wrangler deploy"
 
   }

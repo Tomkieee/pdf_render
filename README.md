@@ -7,12 +7,10 @@ wykres charakterystyki pompy z możliwością przedstawienia mnożników x2 i x3
 
 ## Struktura projektu
 
-codex/create-pdf-generation-in-cloudflare-worker-lcs7pi
-- `src/worker.js` – moduł Workera wskazany w `wrangler.jsonc`.
-- `src/lib/pdf-lib.esm.min.js` – zvendoryzowana biblioteka [`pdf-lib`](https://pdf-lib.js.org/) wykorzystywana do pracy na plikach PDF (dzięki temu wdrożenie w środowisku Cloudflare nie wymaga instalacji zależności w trakcie buildu).
+- `src/index.ts` – punkt wejścia Workera deklarowany w `wrangler.jsonc`.
+- `src/worker.js` – logika Workera odpowiedzialna za renderowanie PDF.
 - `wrangler.jsonc` – konfiguracja Wranglera z nazwą projektu oraz datą kompatybilności.
-- `package.json` / `package-lock.json` – utrzymywane wyłącznie po to, aby środowisko budujące mogło wykonać `npm ci` bez instalowania dodatkowych pakietów.
-
+- `package.json` – zależność `pdf-lib`, brak dodatkowych kroków buildowania.
 ## Uruchomienie lokalne
 
 1. Wdróż Workera przy użyciu [Wranglera](https://developers.cloudflare.com/workers/wrangler/) lub
@@ -27,6 +25,16 @@ codex/create-pdf-generation-in-cloudflare-worker-lcs7pi
    ```bash
    npx wrangler deploy
    ```
+
+3. Aby wdrożyć rozwiązanie do środowiska produkcyjnego Cloudflare, uruchom:
+
+   ```bash
+   npx wrangler deploy
+   ```
+
+   Domyślny punkt wejścia (`src/index.ts`) eksportuje funkcję `fetch`, która przekazuje obsługę
+   żądania do logiki z pliku `src/worker.js`, dzięki czemu projekt działa zarówno lokalnie, jak i
+   po wdrożeniu na platformie Cloudflare Workers.
 
 
 ## Format żądania
