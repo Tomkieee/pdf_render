@@ -2,11 +2,9 @@
   "name": "pdf_render",
   "version": "1.0.0",
   "description": "Cloudflare Worker do generowania kart PDF dla pomp hydraulicznych",
-  "type": "module",
+  "private": true,
   "scripts": {
-    "test": "echo \"Brak testów zautomatyzowanych\""
-  },
-  "dependencies": {
-    "pdf-lib": "^1.17.1"
+    "deploy": "wrangler deploy"
+
   }
 }
