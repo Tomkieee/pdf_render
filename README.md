@@ -7,6 +7,7 @@ wykres charakterystyki pompy z możliwością przedstawienia mnożników x2 i x3
 
 ## Struktura projektu
 
+codex/create-pdf-generation-in-cloudflare-worker-hxcotf
 - `src/index.ts` – punkt wejścia Workera deklarowany w `wrangler.jsonc`.
 - `src/worker.js` – logika Workera odpowiedzialna za renderowanie PDF.
 - `wrangler.jsonc` – konfiguracja Wranglera z nazwą projektu oraz datą kompatybilności.
@@ -27,6 +28,7 @@ wykres charakterystyki pompy z możliwością przedstawienia mnożników x2 i x3
    npx wrangler dev
    ```
 
+codex/create-pdf-generation-in-cloudflare-worker-hxcotf
 3. Aby wdrożyć rozwiązanie do środowiska produkcyjnego Cloudflare, uruchom:
 
    ```bash

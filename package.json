@@ -8,8 +8,10 @@
   },
   "dependencies": {
     "pdf-lib": "^1.17.1"
+codex/create-pdf-generation-in-cloudflare-worker-hxcotf
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250918.0"
+
   }
 }
