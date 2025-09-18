@@ -7,28 +7,25 @@ wykres charakterystyki pompy z możliwością przedstawienia mnożników x2 i x3
 
 ## Struktura projektu
 
-codex/create-pdf-generation-in-cloudflare-worker-hxcotf
 - `src/index.ts` – punkt wejścia Workera deklarowany w `wrangler.jsonc`.
 - `src/worker.js` – logika Workera odpowiedzialna za renderowanie PDF.
 - `wrangler.jsonc` – konfiguracja Wranglera z nazwą projektu oraz datą kompatybilności.
 - `package.json` – zależność `pdf-lib`, brak dodatkowych kroków buildowania.
-
 ## Uruchomienie lokalne
 
-1. Zainstaluj zależności:
-
-   ```bash
-   npm install
-   ```
-
-2. Wdróż Workera przy użyciu [Wranglera](https://developers.cloudflare.com/workers/wrangler/) lub
+1. Wdróż Workera przy użyciu [Wranglera](https://developers.cloudflare.com/workers/wrangler/) lub
    skorzystaj z trybu developerskiego:
 
    ```bash
    npx wrangler dev
    ```
 
-codex/create-pdf-generation-in-cloudflare-worker-hxcotf
+2. Aby wdrożyć rozwiązanie do środowiska produkcyjnego Cloudflare, uruchom:
+
+   ```bash
+   npx wrangler deploy
+   ```
+
 3. Aby wdrożyć rozwiązanie do środowiska produkcyjnego Cloudflare, uruchom:
 
    ```bash
@@ -38,6 +35,7 @@ codex/create-pdf-generation-in-cloudflare-worker-hxcotf
    Domyślny punkt wejścia (`src/index.ts`) eksportuje funkcję `fetch`, która przekazuje obsługę
    żądania do logiki z pliku `src/worker.js`, dzięki czemu projekt działa zarówno lokalnie, jak i
    po wdrożeniu na platformie Cloudflare Workers.
+
 
 ## Format żądania
 

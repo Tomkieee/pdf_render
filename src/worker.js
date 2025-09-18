@@ -1,4 +1,5 @@
-import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb, degrees } from './lib/pdf-lib.esm.min.js';
+
 
 const FALLBACK_TEMPLATE_TITLE = 'Karta pracy pompy';
 const DEFAULT_FILENAME = 'karta-pompy.pdf';
