@@ -1,5 +1,5 @@
 {
-  "name": "my-worker",
+  "name": "pdf-render",
   "main": "src/worker.js",
   "compatibility_date": "2025-09-18"
 }
